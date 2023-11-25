@@ -1,64 +1,50 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import AddContactForm from './AddContactForm';
 import ContactsList from './ContactsList';
 import FilterField from './FilterField';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+export const App = () => {
+  const [filter, setFilter] = useState('');
+  const [contacts, setContacts] = useState([]);
 
-  onNameSubmit = person => {
-    const checkContact = this.state.contacts.some(
+  const onNameSubmit = person => {
+    const checkContact = contacts.some(
       contact => contact.name.toLowerCase() === person.name.toLowerCase()
     );
     if (checkContact) {
       alert(`${person.name} is already in contacts.`);
       return;
     }
-    this.setState(prev => {
-      return {
-        contacts: [...prev.contacts, { ...person, id: nanoid() }],
-      };
+    setContacts(prev => {
+      return [...prev, { ...person, id: nanoid() }];
     });
   };
 
-  onDelete = id => {
-    this.setState(prev => {
-      return {
-        contacts: prev.contacts.filter(contact => contact.id !== id),
-      };
+  const onDelete = id => {
+    setContacts(prev => prev.filter(contact => contact.id !== id));
+  };
+
+  const onFilter = value => {
+    setFilter(value);
+  };
+
+  const getFilteredContacts = () => {
+    return contacts.filter(contact => {
+      return contact.name.toLowerCase().includes(filter.toLowerCase());
     });
   };
 
-  onFilter = value => {
-    this.setState({
-      filter: value,
-    });
-  };
+  const visibleContacts = getFilteredContacts();
 
-  getFilteredContacts = () => {
-    return this.state.contacts.filter(contact => {
-      return contact.name
-        .toLowerCase()
-        .includes(this.state.filter.toLowerCase());
-    });
-  };
-
-  render() {
-    const { contacts, filter } = this.state;
-    const visibleContacts = this.getFilteredContacts();
-    return (
-      <>
-        <h1>Phonebook</h1>
-        <AddContactForm onNameSubmit={this.onNameSubmit} />
-        <FilterField contactFilter={filter} onFilter={this.onFilter} />
-        {contacts.length > 0 && (
-          <ContactsList contacts={visibleContacts} onDelete={this.onDelete} />
-        )}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <h1>Phonebook</h1>
+      <AddContactForm onNameSubmit={onNameSubmit} />
+      <FilterField contactFilter={filter} onFilter={onFilter} />
+      {contacts.length > 0 && (
+        <ContactsList contacts={visibleContacts} onDelete={onDelete} />
+      )}
+    </>
+  );
+};
