@@ -8,21 +8,18 @@ export const App = () => {
   const LS_KEY = 'ls-contacts';
 
   const [filter, setFilter] = useState('');
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(() => {
+    const data = JSON.parse(localStorage.getItem(LS_KEY));
+    if (data === null) {
+      return [];
+    } else {
+      return data;
+    }
+  });
 
   useEffect(() => {
-    if (contacts.length < 1) {
-      return;
-    }
     localStorage.setItem(LS_KEY, JSON.stringify(contacts));
   }, [contacts]);
-
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem(LS_KEY));
-    if (data !== null) {
-      setContacts(data);
-    }
-  }, []);
 
   const onNameSubmit = person => {
     const checkContact = contacts.some(
