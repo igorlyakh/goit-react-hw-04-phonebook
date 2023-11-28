@@ -8,14 +8,9 @@ export const App = () => {
   const LS_KEY = 'ls-contacts';
 
   const [filter, setFilter] = useState('');
-  const [contacts, setContacts] = useState(() => {
-    const data = JSON.parse(localStorage.getItem(LS_KEY));
-    if (data === null) {
-      return [];
-    } else {
-      return data;
-    }
-  });
+  const [contacts, setContacts] = useState(
+    JSON.parse(localStorage.getItem(LS_KEY)) || []
+  );
 
   useEffect(() => {
     localStorage.setItem(LS_KEY, JSON.stringify(contacts));
